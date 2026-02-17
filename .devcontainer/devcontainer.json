@@ -1,27 +1,32 @@
 {
   "name": "GHCP-SDK-demo",
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:22",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
   },
-  "postCreateCommand": "npm install",
+  "postCreateCommand": "pip install -r requirements.txt",
   "customizations": {
     "vscode": {
       "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
         "editor.formatOnSave": true,
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "typescript.tsdk": "node_modules/typescript/lib"
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.analysis.typeCheckingMode": "basic",
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter"
+        }
       },
       "extensions": [
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode",
-        "ms-vscode.vscode-typescript-next",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "ms-python.mypy-type-checker",
         "GitHub.copilot",
         "GitHub.copilot-chat"
       ]
     }
   },
   "forwardPorts": [],
-  "remoteUser": "node"
+  "remoteUser": "vscode"
 }

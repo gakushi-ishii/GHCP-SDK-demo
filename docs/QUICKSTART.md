@@ -9,11 +9,13 @@
 git clone https://github.com/gakushi-ishii/GHCP-SDK-demo.git
 cd GHCP-SDK-demo
 
-# 2. 依存関係をインストール
-npm install
+# 2. 仮想環境を作成（推奨）
+python -m venv .venv
+source .venv/bin/activate  # Linux/macOS
+# .venv\Scripts\activate   # Windows
 
-# 3. TypeScriptをビルド（オプション）
-npm run build
+# 3. 依存関係をインストール
+pip install -r requirements.txt
 ```
 
 ## 実行方法
@@ -23,7 +25,7 @@ npm run build
 対話型メニューから各デモを選択できます：
 
 ```bash
-npm run dev
+python -m ghcp_sdk_demo
 ```
 
 ### 個別のデモを実行
@@ -32,13 +34,13 @@ npm run dev
 
 ```bash
 # チャットデモ
-npm run demo:chat
+python -m ghcp_sdk_demo.demos.chat_demo
 
 # コード生成デモ
-npm run demo:code-gen
+python -m ghcp_sdk_demo.demos.code_generation_demo
 
 # コンテキスト認識デモ
-npm run demo:context
+python -m ghcp_sdk_demo.demos.context_aware_demo
 ```
 
 ## デモの使い方
@@ -71,9 +73,9 @@ Copilot: [エラーハンドリングを含めた詳細な説明...]
 3. 生成されたコードを確認
 
 **サンプル例:**
-- フィボナッチ数列を計算する関数 (TypeScript)
+- フィボナッチ数列を計算する関数 (Python)
 - JSONファイルを読み込んでパースする関数 (Python)
-- REST APIのGETリクエストを送信する関数 (JavaScript)
+- REST APIのGETリクエストを送信する関数 (Python)
 
 ### 3. 🧠 コンテキスト認識デモ
 
@@ -85,7 +87,7 @@ Copilot: [エラーハンドリングを含めた詳細な説明...]
 3. 提案された改善点をレビュー
 
 **シナリオ:**
-- TypeScriptプロジェクトの分析
+- Pythonプロジェクトの分析
 - RESTful API実装の提案
 - テストコードの生成
 
@@ -97,29 +99,35 @@ A: 現在のバージョンはモックデモですが、`.env`ファイルにGi
 
 ### Q: 他のプログラミング言語にも対応していますか？
 
-A: コード生成デモでは、TypeScript、JavaScript、Python、Java、Go、Rustなど、主要な言語をサポートしています。
+A: コード生成デモでは、Python、TypeScript、JavaScript、Java、Go、Rustなど、主要な言語をサポートしています。
 
 ### Q: カスタムデモを追加できますか？
 
-A: はい！`src/demos/`ディレクトリに新しいデモファイルを追加し、`src/index.ts`のメニューに登録することで、カスタムデモを作成できます。
+A: はい！`ghcp_sdk_demo/demos/`ディレクトリに新しいデモファイルを追加し、`ghcp_sdk_demo/app.py`のメニューに登録することで、カスタムデモを作成できます。
 
 ## トラブルシューティング
 
-### エラー: "Cannot find module"
+### エラー: "ModuleNotFoundError"
 
 依存関係が正しくインストールされていない可能性があります：
 
 ```bash
-rm -rf node_modules package-lock.json
-npm install
+pip install -r requirements.txt
 ```
 
-### エラー: "Permission denied"
-
-実行権限の問題です：
+### エラー: 仮想環境が有効化されていない
 
 ```bash
-chmod +x ./node_modules/.bin/*
+source .venv/bin/activate  # Linux/macOS
+# .venv\Scripts\activate   # Windows
+```
+
+### Pythonのバージョンが古い
+
+Python 3.12以上が必要です：
+
+```bash
+python --version
 ```
 
 ## 次のステップ
@@ -133,4 +141,6 @@ chmod +x ./node_modules/.bin/*
 
 - [GitHub Copilot 公式ドキュメント](https://github.com/features/copilot)
 - [Model Context Protocol](https://github.com/modelcontextprotocol/sdk)
-- [TypeScript 公式サイト](https://www.typescriptlang.org/)
+- [Python 公式サイト](https://www.python.org/)
+- [InquirerPy ドキュメント](https://inquirerpy.readthedocs.io/)
+- [Rich ドキュメント](https://rich.readthedocs.io/)

@@ -1,9 +1,16 @@
-# Dependencies
-node_modules/
-package-lock.json
-
-# Build output
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
 dist/
+build/
+.eggs/
+
+# Virtual environment
+venv/
+.venv/
 
 # Environment variables
 .env
@@ -19,6 +26,9 @@ dist/
 .DS_Store
 Thumbs.db
 
+# Type checking
+.mypy_cache/
+.pyright/
+
 # Logs
 *.log
-npm-debug.log*

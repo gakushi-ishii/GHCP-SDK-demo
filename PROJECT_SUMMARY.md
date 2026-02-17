@@ -7,18 +7,18 @@ GitHub Copilot SDKの**新規性と独自性**を分かりやすく示すデモ�
 
 ### 実装した機能
 
-#### 1. 💬 対話型チャットデモ (`src/demos/chat-demo.ts`)
+#### 1. 💬 対話型チャットデモ (`ghcp_sdk_demo/demos/chat_demo.py`)
 - 自然言語での会話インターフェース
 - 会話履歴の保持とコンテキスト管理
 - 会話統計のサマリー表示
 
-#### 2. 🔨 コード生成デモ (`src/demos/code-generation-demo.ts`)
+#### 2. 🔨 コード生成デモ (`ghcp_sdk_demo/demos/code_generation_demo.py`)
 - 自然言語からのコード生成
-- 複数プログラミング言語対応（TypeScript, Python, JavaScript, Java, Go, Rust）
+- 複数プログラミング言語対応（Python, TypeScript, JavaScript, Java, Go, Rust）
 - プリセットサンプルとカスタム入力の両方をサポート
-- 生成コードの文法強調表示
+- 生成コードのシンタックスハイライト表示
 
-#### 3. 🧠 コンテキスト認識デモ (`src/demos/context-aware-demo.ts`)
+#### 3. 🧠 コンテキスト認識デモ (`ghcp_sdk_demo/demos/context_aware_demo.py`)
 - プロジェクト構造の分析
 - 依存関係の検出
 - コーディングスタイルの認識
@@ -27,34 +27,37 @@ GitHub Copilot SDKの**新規性と独自性**を分かりやすく示すデモ�
 ### 技術構成
 
 #### フロントエンド (CLI)
-- **Inquirer.js** - 対話型プロンプト
-- **Chalk** - カラフルなコンソール出力
-- **TypeScript** - 型安全な実装
+- **InquirerPy** - 対話型プロンプト
+- **Rich** - カラフルなコンソール出力・シンタックスハイライト
+- **Python 3.12** - 型ヒントによる型安全な実装
 
 #### アーキテクチャ
-- **ES Modules** - モダンなJavaScriptモジュールシステム
-- **モジュラー設計** - 各デモは独立して実行可能
+- **Python パッケージ構造** - `ghcp_sdk_demo` パッケージとしてモジュラーに構成
+- **asyncio** - 非同期処理によるモダンな設計
 - **拡張可能** - 新しいデモを簡単に追加できる構造
 
 ### プロジェクト構造
 
 ```
 GHCP-SDK-demo/
-├── src/
-│   ├── index.ts                    # メインエントリーポイント
+├── ghcp_sdk_demo/                     # メインパッケージ
+│   ├── __init__.py
+│   ├── __main__.py                    # エントリーポイント
+│   ├── app.py                         # メインアプリケーション
 │   ├── demos/
-│   │   ├── chat-demo.ts           # チャット機能デモ
-│   │   ├── code-generation-demo.ts # コード生成デモ
-│   │   └── context-aware-demo.ts   # コンテキスト認識デモ
+│   │   ├── __init__.py
+│   │   ├── chat_demo.py              # チャット機能デモ
+│   │   ├── code_generation_demo.py   # コード生成デモ
+│   │   └── context_aware_demo.py     # コンテキスト認識デモ
 │   └── utils/
-│       └── logger.ts               # ロギングユーティリティ
+│       ├── __init__.py
+│       └── logger.py                  # ロギングユーティリティ
 ├── docs/
-│   ├── QUICKSTART.md              # クイックスタートガイド
-│   ├── ARCHITECTURE.md            # アーキテクチャドキュメント
-│   └── EXAMPLES.md                # 実行例
-├── dist/                          # ビルド出力
-├── package.json
-├── tsconfig.json
+│   ├── QUICKSTART.md                  # クイックスタートガイド
+│   ├── ARCHITECTURE.md                # アーキテクチャドキュメント
+│   └── EXAMPLES.md                    # 実行例
+├── requirements.txt
+├── pyproject.toml
 ├── .gitignore
 └── README.md
 ```
@@ -63,21 +66,15 @@ GHCP-SDK-demo/
 
 ```bash
 # インストール
-npm install
+pip install -r requirements.txt
 
 # メインデモアプリを起動
-npm run dev
+python -m ghcp_sdk_demo
 
 # 個別デモの実行
-npm run demo:chat       # チャットデモ
-npm run demo:code-gen   # コード生成デモ
-npm run demo:context    # コンテキスト認識デモ
-
-# ビルド
-npm run build
-
-# ビルド済みアプリを実行
-npm start
+python -m ghcp_sdk_demo.demos.chat_demo              # チャットデモ
+python -m ghcp_sdk_demo.demos.code_generation_demo   # コード生成デモ
+python -m ghcp_sdk_demo.demos.context_aware_demo     # コンテキスト認識デモ
 ```
 
 ### ドキュメント
@@ -98,55 +95,9 @@ npm start
 #### docs/ARCHITECTURE.md
 - システムアーキテクチャの説明
 - デザインパターン
-- 新しいデモの追加方法
-- API統合の準備
-- ベストプラクティス
+- 拡張方法
 
-#### docs/EXAMPLES.md
-- 各デモの実行例
-- 出力サンプル
-- ユースケース
-
-### 品質保証
-
-#### コードレビュー
-- ✅ すべてのコードレビュー指摘事項を解決
-- 未使用のimport文を削除
-- Pythonエラーハンドリングを修正
-
-#### セキュリティ
-- ✅ CodeQLスキャン完了
-- 0件の脆弱性
-
-#### ビルド
-- ✅ TypeScriptコンパイル成功
-- ✅ すべてのデモが正常に動作
-
-### 次のステップ（拡張案）
-
-このデモは拡張可能な土台として設計されています。以下の機能を追加することで、より充実したデモになります：
-
-#### 短期的な拡張
-- [ ] 実際のGitHub Copilot SDK APIとの統合
-- [ ] ストリーミングレスポンスの実装
-- [ ] より詳細なエラーハンドリング
-- [ ] ユニットテストの追加
-
-#### 中期的な拡張
-- [ ] Webベースのインターフェース（React/Vue）
-- [ ] データベース連携（会話履歴の永続化）
-- [ ] カスタムエージェントの実装例
-- [ ] マルチファイル編集のデモ
-
-#### 長期的な拡張
-- [ ] リアルタイムコラボレーション機能
-- [ ] プラグインシステム
-- [ ] メトリクス・分析ダッシュボード
-- [ ] マルチユーザーサポート
-
-### GitHub Copilot SDKの新規性を示すポイント
-
-このデモアプリケーションは、以下のGitHub Copilot SDKの独自性を強調しています：
+### 主な技術的特徴
 
 1. **高度なコンテキスト理解**
    - プロジェクト構造、依存関係、コーディングスタイルを自動認識
@@ -162,7 +113,7 @@ npm start
 
 4. **開発者ファーストな設計**
    - シンプルで直感的なAPI
-   - TypeScriptファーストの型安全性
+   - Pythonの型ヒントによる型安全性
    - 拡張可能なアーキテクチャ
 
 ### まとめ

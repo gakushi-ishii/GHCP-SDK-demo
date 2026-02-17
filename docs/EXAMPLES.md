@@ -22,7 +22,7 @@ GitHub Copilot SDK デモアプリケーション
 
 ℹ 各デモは独立して実行できます。自由に試してみてください!
 
-? デモを選択してください: 
+? デモを選択してください:
 ❯ 💬 チャットデモ - 対話型の会話体験
   🔨 コード生成デモ - 自然言語からコードを生成
   🧠 コンテキスト認識デモ - プロジェクトのコンテキストを理解
@@ -39,18 +39,18 @@ GitHub Copilot SDK - チャットデモ
 ℹ このデモでは、Copilot SDKを使った対話型チャットを体験できます。
 ℹ 「exit」と入力すると終了します。
 
-? あなた: TypeScriptでエラーハンドリングを実装する方法を教えて
+? あなた: Pythonでエラーハンドリングを実装する方法を教えて
 
 Copilot:
 ────────────────────────────────────────────────────────────
-「TypeScriptでエラーハンドリングを実装する方法を教えて」について理解しました。
+「Pythonでエラーハンドリングを実装する方法を教えて」について理解しました。
 GitHub Copilot SDKを使えば、このような対話を簡単に実装できます。
 
-? あなた: try-catchの例を教えて
+? あなた: try-exceptの例を教えて
 
 Copilot:
 ────────────────────────────────────────────────────────────
-なるほど、「try-catchの例を教えて」ですね。SDKのチャット機能を使うと、
+なるほど、「try-exceptの例を教えて」ですね。SDKのチャット機能を使うと、
 コンテキストを保持しながら会話を続けられます。
 
 ? あなた: exit
@@ -74,39 +74,43 @@ GitHub Copilot SDK - コード生成デモ
 
 サンプル例
 ────────────────────────────────────────────────────────────
-1. フィボナッチ数列を計算する関数 (typescript)
+1. フィボナッチ数列を計算する関数 (python)
 2. JSONファイルを読み込んでパースする関数 (python)
-3. REST APIのGETリクエストを送信する関数 (javascript)
+3. REST APIのGETリクエストを送信する関数 (python)
 
-? デモを選択してください: サンプル1: フィボナッチ数列 (TypeScript)
+? デモを選択してください: サンプル1: フィボナッチ数列 (Python)
 
 コード生成中...
 ────────────────────────────────────────────────────────────
 ✓ コード生成が完了しました！
 
 説明: フィボナッチ数列を計算する関数
-言語: typescript
+言語: python
 
-```typescript
-function fibonacci(n: number): number {
-  if (n <= 1) return n;
-  return fibonacci(n - 1) + fibonacci(n - 2);
-}
+def fibonacci(n: int) -> int:
+    """フィボナッチ数列のn番目の値を返す"""
+    if n <= 1:
+        return n
+    return fibonacci(n - 1) + fibonacci(n - 2)
 
-// メモ化版（最適化）
-function fibonacciMemo(n: number, memo: Map<number, number> = new Map()): number {
-  if (n <= 1) return n;
-  if (memo.has(n)) return memo.get(n)!;
-  
-  const result = fibonacciMemo(n - 1, memo) + fibonacciMemo(n - 2, memo);
-  memo.set(n, result);
-  return result;
-}
 
-// 使用例
-console.log(fibonacci(10)); // 55
-console.log(fibonacciMemo(50)); // 12586269025
-```
+def fibonacci_memo(n: int, memo: dict[int, int] | None = None) -> int:
+    """メモ化版フィボナッチ（最適化）"""
+    if memo is None:
+        memo = {}
+    if n <= 1:
+        return n
+    if n in memo:
+        return memo[n]
+
+    result = fibonacci_memo(n - 1, memo) + fibonacci_memo(n - 2, memo)
+    memo[n] = result
+    return result
+
+
+# 使用例
+print(fibonacci(10))        # 55
+print(fibonacci_memo(50))   # 12586269025
 
 GitHub Copilot SDKの特徴
 ────────────────────────────────────────────────────────────
@@ -126,27 +130,27 @@ GitHub Copilot SDK - コンテキスト認識デモ
 
 ℹ このデモでは、Copilot SDKがプロジェクトのコンテキストを理解する機能を示します。
 
-? デモシナリオを選択してください: シナリオ1: TypeScriptプロジェクトの分析
+? デモシナリオを選択してください: シナリオ1: Pythonプロジェクトの分析
 
 コンテキストを分析中...
 ────────────────────────────────────────────────────────────
 ✓ コンテキスト分析が完了しました！
 
-ファイルタイプ: TypeScript Project
-コードスタイル: ES Modules, Strict TypeScript
+ファイルタイプ: Python Project
+コードスタイル: Type Hints, PEP 8, Black formatter
 
 検出された依存関係
 ────────────────────────────────────────────────────────────
-  • typescript
-  • tsx
-  • @types/node
+  • rich
+  • InquirerPy
+  • python-dotenv
 
 提案
 ────────────────────────────────────────────────────────────
-  1. tsconfig.jsonの設定は適切です
-  2. package.jsonにビルドスクリプトが定義されています
-  3. ESModuleの使用が一貫しています
-  4. 型定義が適切に行われています
+  1. pyproject.tomlの設定は適切です
+  2. 型ヒントが一貫して使用されています
+  3. PEP 8に準拠したコーディングスタイルです
+  4. mypyによる静的型チェックが有効です
 
 GitHub Copilot SDKのコンテキスト認識機能
 ────────────────────────────────────────────────────────────
@@ -158,8 +162,8 @@ Copilot SDKは以下の情報を活用します：
    • モジュール構成
 
 📦 依存関係
-   • package.json / requirements.txt
-   • インポート文
+   • pyproject.toml / requirements.txt
+   • import文
    • 使用ライブラリ
 
 💻 コードスタイル
