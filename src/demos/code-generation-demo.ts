@@ -143,7 +143,7 @@ def read_json_file(file_path: str) -> Dict[str, Any]:
     except FileNotFoundError:
         raise FileNotFoundError(f"ファイルが見つかりません: {file_path}")
     except json.JSONDecodeError as e:
-        raise json.JSONDecodeError(f"JSONのパースに失敗しました: {e.msg}", e.doc, e.pos)
+        raise ValueError(f"JSONのパースに失敗しました: {e.msg}") from e
 
 # 使用例
 if __name__ == "__main__":

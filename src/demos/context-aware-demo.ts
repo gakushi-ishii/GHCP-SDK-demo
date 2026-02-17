@@ -1,7 +1,5 @@
 import { Logger } from '../utils/logger.js';
 import inquirer from 'inquirer';
-import fs from 'fs/promises';
-import path from 'path';
 
 /**
  * コンテキスト認識デモ
