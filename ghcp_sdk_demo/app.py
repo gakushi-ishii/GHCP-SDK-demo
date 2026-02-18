@@ -1,116 +1,76 @@
+"""GitHub Copilot SDK デモ Web アプリケーション
+
+FastAPI ベースの Web アプリケーション。
+GitHub Copilot SDK の主要機能をブラウザ上でデモします。
 """
-GitHub Copilot SDK デモアプリケーション
 
-メインエントリーポイント。
-対話型メニューから各デモを選択して実行できる。
-"""
-
-from __future__ import annotations
-
-import asyncio
 import os
-import sys
+from contextlib import asynccontextmanager
+from pathlib import Path
+from typing import AsyncGenerator
 
-from ghcp_sdk_demo.demos.chat_demo import ChatDemo
-from ghcp_sdk_demo.demos.code_generation_demo import CodeGenerationDemo
-from ghcp_sdk_demo.demos.context_aware_demo import ContextAwareDemo
-from ghcp_sdk_demo.utils.logger import Logger
-from ghcp_sdk_demo.utils.prompts import confirm_prompt, select_prompt
+from dotenv import load_dotenv
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 
+from copilot import CopilotClient
 
-class DemoApp:
-    """デモアプリケーションのメインクラス"""
+from ghcp_sdk_demo.demos.chat import router as chat_router
+from ghcp_sdk_demo.demos.codegen import router as codegen_router
+from ghcp_sdk_demo.demos.tools import router as tools_router
 
-    async def run(self) -> None:
-        """アプリケーションのメインループ"""
-        self._display_welcome()
+load_dotenv()
 
-        while True:
-            demo: str = await select_prompt(
-                message="デモを選択してください:",
-                choices=[
-                    {
-                        "name": "💬 チャットデモ - 対話型の会話体験",
-                        "value": "chat",
-                    },
-                    {
-                        "name": "🔨 コード生成デモ - 自然言語からコードを生成",
-                        "value": "codegen",
-                    },
-                    {
-                        "name": "🧠 コンテキスト認識デモ - プロジェクトのコンテキストを理解",
-                        "value": "context",
-                    },
-                    {"name": "❌ 終了", "value": "exit"},
-                ],
-            )
-
-            if demo == "exit":
-                Logger.success(
-                    "デモアプリケーションを終了します。ご利用ありがとうございました！"
-                )
-                break
-
-            await self._run_demo(demo)
-
-            print("\n")
-            continue_demo = await confirm_prompt(
-                message="他のデモを試しますか？",
-                default=True,
-            )
-
-            if not continue_demo:
-                Logger.success(
-                    "デモアプリケーションを終了します。ご利用ありがとうございました！"
-                )
-                break
-
-    def _display_welcome(self) -> None:
-        """ウェルカムメッセージを表示する"""
-        os.system("clear" if os.name != "nt" else "cls")
-        Logger.header("GitHub Copilot SDK デモアプリケーション")
-
-        print("このデモでは、GitHub Copilot SDKの以下の機能を体験できます:\n")
-        print("  💬 対話型チャット")
-        print("     └ 自然な会話を通じた開発支援\n")
-        print("  🔨 コード生成")
-        print("     └ 自然言語からの高品質なコード生成\n")
-        print("  🧠 コンテキスト認識")
-        print("     └ プロジェクト構造を理解した提案\n")
-
-        Logger.info("各デモは独立して実行できます。自由に試してみてください！\n")
-
-    async def _run_demo(self, demo_type: str) -> None:
-        """指定されたデモを実行する"""
-        try:
-            match demo_type:
-                case "chat":
-                    chat = ChatDemo()
-                    await chat.run()
-                case "codegen":
-                    codegen = CodeGenerationDemo()
-                    await codegen.run()
-                case "context":
-                    context = ContextAwareDemo()
-                    await context.run()
-                case _:
-                    Logger.error("不明なデモタイプです")
-        except Exception as e:
-            Logger.error(f"デモの実行中にエラーが発生しました: {e}")
+# グローバル CopilotClient（アプリ起動時に初期化）
+copilot_client: CopilotClient | None = None
 
 
-def main() -> None:
-    """アプリケーションを起動する"""
-    app = DemoApp()
-    try:
-        asyncio.run(app.run())
-    except (KeyboardInterrupt, EOFError):
-        print()
-        Logger.success(
-            "デモアプリケーションを終了します。ご利用ありがとうございました！"
-        )
-        sys.exit(0)
+def get_client() -> CopilotClient:
+    """CopilotClient のシングルトンを取得"""
+    if copilot_client is None:
+        raise RuntimeError("CopilotClient が初期化されていません")
+    return copilot_client
 
 
-if __name__ == "__main__":
-    main()
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """アプリのライフサイクル管理: CopilotClient の起動・停止"""
+    global copilot_client
+
+    token = os.getenv("GITHUB_TOKEN")
+    client_kwargs: dict = {}
+    if token:
+        client_kwargs["github_token"] = token
+
+    copilot_client = CopilotClient(**client_kwargs)
+    await copilot_client.start()
+    print("✅ Copilot SDK クライアント起動完了")
+
+    yield
+
+    await copilot_client.stop()
+    print("🛑 Copilot SDK クライアント停止")
+
+
+app = FastAPI(
+    title="GitHub Copilot SDK Demo",
+    description="GitHub Copilot SDK の機能をデモする Web アプリケーション",
+    version="2.0.0",
+    lifespan=lifespan,
+)
+
+# API routers
+app.include_router(chat_router, prefix="/api")
+app.include_router(codegen_router, prefix="/api")
+app.include_router(tools_router, prefix="/api")
+
+# 静的ファイル配信
+static_dir = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+
+@app.get("/")
+async def index() -> FileResponse:
+    """メインページを配信"""
+    return FileResponse(str(static_dir / "index.html"))

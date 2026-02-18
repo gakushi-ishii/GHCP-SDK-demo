@@ -1,15 +1,15 @@
 [project]
 name = "ghcp-sdk-demo"
-version = "1.0.0"
-description = "GitHub Copilot SDK のデモ用"
+version = "2.0.0"
+description = "GitHub Copilot SDK のデモ Web アプリケーション"
 readme = "README.md"
 license = "ISC"
 requires-python = ">=3.12"
 dependencies = [
-    "InquirerPy>=0.3.4",
-    "rich>=13.9.0",
+    "github-copilot-sdk>=0.1.0",
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
     "python-dotenv>=1.0.1",
-    "mcp>=1.2.0",
 ]
 
 [project.optional-dependencies]
@@ -22,12 +22,15 @@ dev = [
 [tool.setuptools.packages.find]
 include = ["ghcp_sdk_demo*"]
 
+[tool.setuptools.package-data]
+ghcp_sdk_demo = ["static/**/*"]
+
 [project.urls]
 Homepage = "https://github.com/gakushi-ishii/GHCP-SDK-demo"
 Issues = "https://github.com/gakushi-ishii/GHCP-SDK-demo/issues"
 
 [project.scripts]
-ghcp-demo = "ghcp_sdk_demo.app:main"
+ghcp-demo = "ghcp_sdk_demo.__main__:main"
 
 [tool.black]
 line-length = 88

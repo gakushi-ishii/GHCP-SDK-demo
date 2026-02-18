@@ -1,173 +1,82 @@
 # GitHub Copilot SDK デモアプリケーション
 
-GitHub Copilot SDKの主要機能を実演するインタラクティブなデモアプリケーションです。
+[github-copilot-sdk](https://github.com/github/copilot-sdk) の主要機能を Web ブラウザ上でデモする FastAPI アプリケーションです。
 
-## 🎯 このデモについて
+## 🎯 デモ内容
 
-このデモアプリケーションは、GitHub Copilot SDKの**新規性と独自性**を分かりやすく示すために作成されました。以下の3つの主要機能を体験できます：
-
-### 1. 💬 対話型チャット
-
-- 自然な会話を通じた開発支援
-- コンテキストを保持した連続的な対話
-- ストリーミングレスポンス（実装予定）
-
-### 2. 🔨 コード生成
-
-- 自然言語の説明から高品質なコードを生成
-- 複数のプログラミング言語に対応（Python, TypeScript, JavaScript等）
-- ベストプラクティスに準拠したコード出力
-
-### 3. 🧠 コンテキスト認識
-
-- プロジェクト構造を理解した提案
-- 既存のコーディングスタイルへの適応
-- 依存関係や関連ファイルを考慮した最適な提案
+| デモ | 説明 | SDK 機能 |
+|------|------|----------|
+| 💬 チャット | ストリーミングチャット | `create_session(streaming=True)` + SSE |
+| 🔨 コード生成 | 自然言語からコード生成 | `system_message` によるタスク特化 |
+| 🛠️ カスタムツール | LLM がツールを自動呼び出し | `@define_tool` + Function Calling |
 
 ## 🚀 セットアップ
 
-### 方法1: Dev Container を使用（推奨）
+### 前提条件
 
-最も簡単な方法です。Python、依存関係、VS Code 拡張機能がすべて自動でセットアップされます。
+- GitHub Copilot のアクセス権を持つ GitHub アカウント
+- Dev Container 対応の VS Code（推奨）
 
-#### 前提条件
+### 1. Dev Container で開く
 
-- [Visual Studio Code](https://code.visualstudio.com/)
-- [Dev Containers 拡張機能](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+このリポジトリを VS Code の **Dev Containers** で開きます。自動的に以下がインストールされます:
 
-#### 手順
+- Python 3.12
+- Node.js
+- GitHub CLI
+- Copilot CLI (`@github/copilot`)
+- Python 依存パッケージ
 
-1. リポジトリをクローン
-   ```bash
-   git clone https://github.com/gakushi-ishii/GHCP-SDK-demo.git
-   ```
-2. VS Code でフォルダを開く
-3. 右下に表示される「**Reopen in Container**」通知をクリック（または コマンドパレットから `Dev Containers: Reopen in Container` を実行）
-4. コンテナのビルドが完了すると、依存関係のインストール（`pip install -r requirements.txt`）が自動的に実行されます
-
-> **含まれるツール:** Python 3.12、Black、mypy、Pylance、GitHub Copilot 拡張機能
-
-### 方法2: ローカル環境で手動セットアップ
-
-#### 前提条件
-
-- Python 3.12 以上
-- pip
-
-#### 手順
+### 2. 認証
 
 ```bash
-# リポジトリをクローン
-git clone https://github.com/gakushi-ishii/GHCP-SDK-demo.git
-cd GHCP-SDK-demo
+# Copilot CLI にログイン
+copilot auth login
 
-# 仮想環境を作成（推奨）
-python -m venv .venv
-source .venv/bin/activate  # Linux/macOS
-# .venv\Scripts\activate   # Windows
-
-# 依存関係をインストール
-pip install -r requirements.txt
-
-# 環境変数を設定（必要に応じて）
+# または環境変数で設定
 cp .env.example .env
-# .envファイルを編集してGitHub APIトークンを設定
+# .env を編集して GITHUB_TOKEN を設定
 ```
 
-## 📖 使い方
-
-### メインデモアプリを起動
+### 3. サーバー起動
 
 ```bash
 python -m ghcp_sdk_demo
 ```
 
-対話型メニューから各デモを選択できます。
+ブラウザで http://localhost:8000 を開きます。
 
-### 個別のデモを実行
-
-各デモは個別に実行することもできます：
-
-```bash
-# チャットデモ
-python -m ghcp_sdk_demo.demos.chat_demo
-
-# コード生成デモ
-python -m ghcp_sdk_demo.demos.code_generation_demo
-
-# コンテキスト認識デモ
-python -m ghcp_sdk_demo.demos.context_aware_demo
-```
-
-## 🏗️ プロジェクト構造
+## 📁 プロジェクト構造
 
 ```
-GHCP-SDK-demo/
-├── .devcontainer/
-│   └── devcontainer.json              # Dev Container 設定
-├── ghcp_sdk_demo/                     # メインパッケージ
-│   ├── __init__.py
-│   ├── __main__.py                    # エントリーポイント
-│   ├── app.py                         # メインアプリケーション
-│   ├── demos/
-│   │   ├── __init__.py
-│   │   ├── chat_demo.py              # チャットデモ
-│   │   ├── code_generation_demo.py   # コード生成デモ
-│   │   └── context_aware_demo.py     # コンテキスト認識デモ
-│   └── utils/
-│       ├── __init__.py
-│       └── logger.py                  # ロギングユーティリティ
-├── docs/
-│   ├── ARCHITECTURE.md
-│   ├── EXAMPLES.md
-│   └── QUICKSTART.md
-├── requirements.txt
-├── pyproject.toml
-└── README.md
+ghcp_sdk_demo/
+├── __init__.py          # パッケージ
+├── __main__.py          # uvicorn 起動
+├── app.py               # FastAPI アプリ + CopilotClient ライフサイクル
+├── demos/
+│   ├── chat.py          # チャットデモ（SSE ストリーミング）
+│   ├── codegen.py       # コード生成デモ
+│   └── tools.py         # カスタムツールデモ（@define_tool）
+└── static/
+    ├── index.html       # メインページ
+    ├── style.css        # スタイル
+    └── app.js           # フロントエンド（SSE 受信）
 ```
 
-## ✨ GitHub Copilot SDKの特徴
+## 🔧 技術スタック
 
-このデモでは、以下のGitHub Copilot SDKの独自機能を体験できます：
+- **バックエンド**: FastAPI + uvicorn
+- **AI**: GitHub Copilot SDK (`github-copilot-sdk`)
+- **フロントエンド**: バニラ HTML/CSS/JS（外部フレームワーク不使用）
+- **通信**: Server-Sent Events (SSE) によるストリーミング
 
-### 🎨 高度なコンテキスト理解
+## 📝 環境変数
 
-- プロジェクトの構造、依存関係、コーディングスタイルを自動認識
-- 既存のコードベースに調和した提案を生成
+| 変数 | 説明 | デフォルト |
+|------|------|-----------|
+| `GITHUB_TOKEN` | GitHub 認証トークン | Copilot CLI のログインユーザー |
+| `COPILOT_MODEL` | デフォルトモデル | `gpt-4.1` |
 
-### 🔄 リアルタイムインタラクション
-
-- ストリーミングレスポンスによる即時フィードバック
-- 対話を通じた段階的な改善
-
-### 🛠️ 開発者ファーストな設計
-
-- シンプルで直感的なAPI
-- Pythonの型ヒントによる型安全性
-- 拡張可能なアーキテクチャ
-
-## 🔜 今後の拡張予定
-
-現在のデモは基本的な土台です。以下の機能を追加することで、さらに充実したデモになります：
-
-- [ ] 実際のGitHub Copilot SDK APIとの統合
-- [ ] ストリーミングレスポンスの実装
-- [ ] より複雑なコード生成シナリオ
-- [ ] カスタムエージェントの実装例
-- [ ] Webベースのデモインターフェース
-- [ ] リアルタイムコードレビュー機能
-- [ ] マルチファイル編集のデモ
-
-## 🤝 貢献
-
-フィードバックや改善提案は大歓迎です！Issueやプルリクエストをお気軽にお送りください。
-
-## 📝 ライセンス
+## ライセンス
 
 ISC
-
-## 🔗 関連リンク
-
-- [GitHub Copilot](https://github.com/features/copilot)
-- [Model Context Protocol SDK](https://github.com/modelcontextprotocol/sdk)

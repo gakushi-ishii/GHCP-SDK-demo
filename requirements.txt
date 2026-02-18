@@ -1,12 +1,12 @@
-# CLI & UI
-InquirerPy>=0.3.4
-rich>=13.9.0
+# GitHub Copilot SDK
+github-copilot-sdk>=0.1.0
+
+# Web Framework
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
 
 # Environment
 python-dotenv>=1.0.1
-
-# MCP SDK
-mcp>=1.2.0
 
 # Development
 mypy>=1.13.0

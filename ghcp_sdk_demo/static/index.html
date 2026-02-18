@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Copilot SDK Demo</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <h1>🚀 GitHub Copilot SDK Demo</h1>
+    <p class="subtitle">github-copilot-sdk の主要機能をブラウザ上で体験</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="chat">💬 チャット</button>
+    <button class="tab" data-tab="codegen">🔨 コード生成</button>
+    <button class="tab" data-tab="tools">🛠️ カスタムツール</button>
+  </nav>
+
+  <!-- チャットデモ -->
+  <section id="tab-chat" class="tab-content active">
+    <div class="demo-description">
+      <h2>チャットデモ</h2>
+      <p>Copilot SDK のストリーミングチャット機能。トークンがリアルタイムに表示されます。</p>
+      <code>session = await client.create_session({"model": "...", "streaming": True})</code>
+    </div>
+    <div class="chat-container" id="chat-messages"></div>
+    <form id="chat-form" class="input-area">
+      <input type="text" id="chat-input" placeholder="メッセージを入力..." autocomplete="off">
+      <button type="submit">送信</button>
+    </form>
+  </section>
+
+  <!-- コード生成デモ -->
+  <section id="tab-codegen" class="tab-content">
+    <div class="demo-description">
+      <h2>コード生成デモ</h2>
+      <p>自然言語からコードを生成。<code>system_message</code> でコード生成に特化した指示を設定。</p>
+    </div>
+    <form id="codegen-form" class="codegen-input">
+      <div class="form-row">
+        <select id="codegen-language">
+          <option value="python">Python</option>
+          <option value="javascript">JavaScript</option>
+          <option value="typescript">TypeScript</option>
+          <option value="go">Go</option>
+          <option value="rust">Rust</option>
+          <option value="java">Java</option>
+          <option value="csharp">C#</option>
+        </select>
+        <input type="text" id="codegen-input" placeholder="生成したいコードの説明..." autocomplete="off">
+        <button type="submit">生成</button>
+      </div>
+    </form>
+    <div class="code-output" id="codegen-output">
+      <pre><code id="codegen-code"></code></pre>
+    </div>
+  </section>
+
+  <!-- カスタムツールデモ -->
+  <section id="tab-tools" class="tab-content">
+    <div class="demo-description">
+      <h2>カスタムツールデモ</h2>
+      <p><code>@define_tool</code> で定義したツールを LLM が自動的に呼び出します。</p>
+      <div class="tools-list">
+        <span class="tool-badge">🕐 get_current_time</span>
+        <span class="tool-badge">🧮 calculate</span>
+        <span class="tool-badge">🌤️ fetch_weather</span>
+      </div>
+    </div>
+    <div class="chat-container" id="tools-messages"></div>
+    <form id="tools-form" class="input-area">
+      <input type="text" id="tools-input" placeholder="例: 東京の天気と 123 * 456 を教えて" autocomplete="off">
+      <button type="submit">送信</button>
+    </form>
+  </section>
+
+  <footer>
+    <p>Powered by <a href="https://github.com/github/copilot-sdk" target="_blank">github-copilot-sdk</a></p>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
