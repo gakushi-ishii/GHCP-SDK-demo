@@ -38,12 +38,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """アプリのライフサイクル管理: CopilotClient の起動・停止"""
     global copilot_client
 
-    token = os.getenv("GITHUB_TOKEN")
-    client_kwargs: dict = {}
-    if token:
-        client_kwargs["github_token"] = token
-
-    copilot_client = CopilotClient(**client_kwargs)
+    # GITHUB_TOKEN は環境変数から SDK が自動検出する
+    copilot_client = CopilotClient()
     await copilot_client.start()
     print("✅ Copilot SDK クライアント起動完了")
 
